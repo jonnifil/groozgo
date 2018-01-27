@@ -75,3 +75,77 @@ ClientAddressInfo.prototype = {
         this.address_dialog.add();
     }
 };
+
+AddressDialog = function (parent) {
+    this.grid_block = parent;
+    this.block = $('#address_dialog');
+    $('[name="save"]', this.block).on('click', $.proxy(this.save, this));
+};
+
+AddressDialog.prototype = {
+    constructor: AddressDialog,
+
+    add: function () {
+        var data = {
+            id: 0,
+            client_id: client_info.id,
+            name: '',
+            address: ''
+        };
+        this.show(data);
+    },
+
+    edit: function (id) {
+        var $this = this;
+        var param = $('meta[name=csrf-param]').attr("content");
+        var token = $('meta[name=csrf-token]').attr("content");
+        var data = {};
+        data[param] = token;
+        data.id = id;
+        $.ajax({
+            type: "POST",
+            data: data,
+            url: "/index.php?r=site/address",
+            success: function (data) {
+                $this.show($.parseJSON(data));
+            }
+        })
+    },
+
+    show: function (data) {
+        var value;
+        for (var name in data){
+            value = data[name];
+            console.log(name+'-'+value)
+            $('input[name="'+name+'"]', this.block).val(value);
+        }
+        this.block.modal('show');
+    },
+
+    save: function () {
+        var url = window.location.toString();
+        var $this = this;
+        var param = $('meta[name=csrf-param]').attr("content");
+        var token = $('meta[name=csrf-token]').attr("content");
+        var data = {};
+        data[param] = token;
+        data.client_address = {
+            id: $('[name="id"]', this.block).val(),
+            client_id: $('[name="client_id"]', this.block).val(),
+            name: $('[name="name"]', this.block).val(),
+            address: $('[name="address"]', this.block).val()
+        };
+        $.ajax({
+            type: "POST",
+            data: data,
+            url: "/index.php?r=site/save",
+            success: function (data) {
+                window.location.assign(url);
+            }
+        })
+    }
+};
+
+function onLoad (ymaps) {
+    var suggestView = new ymaps.SuggestView('address_add');
+}

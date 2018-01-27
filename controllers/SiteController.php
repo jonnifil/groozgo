@@ -99,6 +99,37 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionAddress()
+    {
+        $id = Yii::$app->request->post('id');
+        $address = ClientAddress::find()
+            ->where(['id'=>$id])
+            ->asArray()
+            ->one();
+        return json_encode($address);
+    }
+
+    public function actionSave()
+    {
+        $address = Yii::$app->request->post('client_address');
+        if ($address){
+            if ($address['id'] > 0){
+                $model = ClientAddress::findOne($address['id']);
+                $model->name = $address['name'];
+                $model->address = $address['address'];
+                $model->save();
+            }else{
+                $model = new ClientAddress();
+                $model->client_id = $address['client_id'];
+                $model->name = $address['name'];
+                $model->address = $address['address'];
+                $model->save();
+            }
+            return 'saved';
+        }
+        return 'error';
+    }
+
     /**
      * Login action.
      *
