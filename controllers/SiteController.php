@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Client;
+use app\models\ClientAddress;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -84,9 +85,17 @@ class SiteController extends Controller
      */
     public function actionClient($id)
     {
-        $client_data = Client::findOne($id);
+        $client_data = Client::findOneView($id);
+        $address_list = ClientAddress::find()->where(['client_id' => $id]);
+        $provider = new ActiveDataProvider([
+            'query' => $address_list,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
         return $this->render('client', [
-            'client' => $client_data
+            'client' => $client_data,
+            'provider' => $provider
         ]);
     }
 
