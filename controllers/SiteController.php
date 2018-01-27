@@ -2,7 +2,9 @@
 
 namespace app\controllers;
 
+use app\models\Client;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -56,12 +58,36 @@ class SiteController extends Controller
 
     /**
      * Displays homepage.
+     * На главную выводим грид клиентов
      *
      * @return string
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $client_list = Client::find();
+        $provider = new ActiveDataProvider([
+            'query' => $client_list,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+        return $this->render('index', [
+            'provider' => $provider
+        ]);
+    }
+
+    /**
+     * Client action.
+     *
+     * @return Response
+     * Карточка Клиента с возможностью редактирования и добавления адресов объектов
+     */
+    public function actionClient($id)
+    {
+        $client_data = Client::findOne($id);
+        return $this->render('client', [
+            'client' => $client_data
+        ]);
     }
 
     /**
