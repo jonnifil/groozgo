@@ -130,6 +130,7 @@
                 <h4 class="modal-title">Добавление адреса клиента</h4>
             </div>
             <div class="modal-body">
+                <div id="address_error_message"></div>
                 <form class="form-horizontal">
                     <input type="hidden" name="id">
                     <input type="hidden" name="client_id">

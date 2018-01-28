@@ -89,15 +89,19 @@ class SiteController extends Controller
                 $model = ClientAddress::findOne($address['id']);
                 $model->name = $address['name'];
                 $model->address = $address['address'];
-                $model->save();
             }else{
                 $model = new ClientAddress();
                 $model->client_id = $address['client_id'];
                 $model->name = $address['name'];
                 $model->address = $address['address'];
-                $model->save();
             }
-            return 'saved';
+            if ($model->validate()){
+                $model->save();
+                return 'saved';
+            }else {
+                $errors = $model->errors;
+                return 'error';
+            }
         }
         return 'error';
     }
@@ -119,8 +123,13 @@ class SiteController extends Controller
             $model->born_date = $client_data['born_date'];
             $model->sex = $client_data['sex'];
             $model->phone = $client_data['phone'];
-            $model->save();
-            return $model->id;
+            if ($model->validate()){
+                $model->save();
+                return $model->id;
+            }else {
+                $errors = $model->errors;
+                return $client_data['id'] > 0 ? $client_data['id'] : 0;
+            }
         }
         return 0;
     }

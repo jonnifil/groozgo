@@ -22,6 +22,15 @@ class Client extends ActiveRecord
         return $this->hasMany(ClientAddress::className(), ['client_id' => 'id']);
     }
 
+    public function rules()
+    {
+        return [
+            [['first_name', 'last_name', 'sex'], 'required'],
+
+            [['born_date', 'phone'], 'string'],
+        ];
+    }
+
     /**
      * @param $id
      * @return mixed

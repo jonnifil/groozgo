@@ -138,6 +138,7 @@ ClientAddressInfo.prototype = {
 AddressDialog = function (parent) {
     this.grid_block = parent;
     this.block = $('#address_dialog');
+    this.error_view = $('#address_error_message');
     $('[name="save"]', this.block).on('click', $.proxy(this.save, this));
 };
 
@@ -172,6 +173,7 @@ AddressDialog.prototype = {
     },
 
     show: function (data) {
+        this.error_view.empty();
         var value;
         for (var name in data){
             value = data[name];
@@ -182,26 +184,44 @@ AddressDialog.prototype = {
     },
 
     save: function () {
+        this.error_view.empty();
         var url = window.location.toString();
         var $this = this;
         var param = $('meta[name=csrf-param]').attr("content");
         var token = $('meta[name=csrf-token]').attr("content");
-        var data = {};
+        var data = {}, error;
         data[param] = token;
         data.client_address = {
             id: $('[name="id"]', this.block).val(),
             client_id: $('[name="client_id"]', this.block).val(),
-            name: $('[name="name"]', this.block).val(),
-            address: $('[name="address"]', this.block).val()
+            name: $('[name="name"]', this.block).val().trim(),
+            address: $('[name="address"]', this.block).val().trim()
         };
-        $.ajax({
-            type: "POST",
-            data: data,
-            url: save_url,
-            success: function (data) {
-                window.location.assign(url);
+        var errors = this.validate(data.client_address);
+        if (errors.length > 0){
+            for (var i in errors){
+                error = errors[i];
+                $('<p class="text-danger">'+error+'</p>').appendTo(this.error_view);
             }
-        });
+            return false;
+        }else
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: save_url,
+                success: function (data) {
+                    window.location.assign(url);
+                }
+            });
+    },
+
+    validate: function (data) {
+        var errors = [];
+        if (data.name.length == 0)
+            errors.push('Поле Название объекта должно быть заполнено!');
+        if (data.address.length == 0)
+            errors.push('Поле Адрес должно быть заполнено!');
+        return errors;
     }
 };
 

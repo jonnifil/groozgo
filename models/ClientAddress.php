@@ -21,4 +21,11 @@ class ClientAddress extends ActiveRecord
     {
         return $this->hasOne(Client::className(), ['id' => 'client_id']);
     }
+
+    public function rules()
+    {
+        return [
+            [['name', 'address', 'client_id'], 'required'],
+        ];
+    }
 }
