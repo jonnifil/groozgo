@@ -22,9 +22,23 @@ $this->title = 'groozgo test';
             'columns' => [
                 ['attribute' => 'last_name', 'header' => 'Фамилия'],
                 ['attribute' => 'first_name', 'header' => 'Имя'],
-                ['attribute' => 'sex', 'header' => 'Пол'],
-                ['attribute' => 'born_date', 'header' => 'Дата рождения'],
-                ['attribute' => 'phone', 'header' => 'Телефон'],
+                ['attribute' => 'sex',
+                    'header' => 'Пол',
+                    'value' => function ($data){ return $data->sex == 1 ? 'М' : 'Ж';}
+                ],
+                ['attribute' => 'born_date',
+                    'header' => 'Дата рождения',
+                    'value' => function ($data){
+                        $born_date = new DateTime($data->born_date);
+                        return $born_date->format('d,m,Y');
+                    }
+                ],
+                ['attribute' => 'phone',
+                    'header' => 'Телефон',
+                    'value' => function ($data){
+                        return '+7(' . substr($data->phone, 0, 3) . ')' . substr($data->phone, 3, 3) . '-' . substr($data->phone,6);
+                    }
+                ],
 
                 [
                     'class' => '\yii\grid\ActionColumn',
@@ -32,7 +46,7 @@ $this->title = 'groozgo test';
                     'template' => '{view}',
                     'buttons' => [
                         'view'=>function ($url, $model) {
-                            $customurl=Yii::$app->getUrlManager()->createUrl(['site/client','id'=>$model['id']]); //$model->id для AR
+                            $customurl=Yii::$app->getUrlManager()->createUrl(['site/client','id'=>$model['id']]);
                             return \yii\helpers\Html::a( '<span class="glyphicon glyphicon-eye-open"></span>', $customurl,
                                 ['title' => Yii::t('yii', 'View'), 'data-pjax' => '0']);
                         }

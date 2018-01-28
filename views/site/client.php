@@ -4,7 +4,11 @@
     var client_edit = <?=(int)$edit ?>;
     var back_url = "<?=Yii::$app->getUrlManager()->createUrl(['site/index']) ?>";
     var client_url = "<?=Yii::$app->getUrlManager()->createUrl(['site/client']) ?>";
+    var save_url = "<?=Yii::$app->getUrlManager()->createUrl(['site/save']) ?>";
+    var create_url = "<?=Yii::$app->getUrlManager()->createUrl(['site/create']) ?>";
+    var address_url = "<?=Yii::$app->getUrlManager()->createUrl(['site/address']) ?>";
 </script>
+<?php $this->registerJsFile(Yii::getAlias('@web/js/client.js'), ['depends' => \yii\web\JqueryAsset::className()]); ?>
 <div class="col-lg-12" id="client_card">
     <h2 class="text-center">Карточка клиента</h2>
     <div class="col-lg-6 form-horizontal" id="main_info">

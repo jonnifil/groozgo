@@ -13,11 +13,19 @@ use yii\db\ActiveRecord;
 
 class Client extends ActiveRecord
 {
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getUserAddress()
     {
         return $this->hasMany(ClientAddress::className(), ['client_id' => 'id']);
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public static function findOneView($id)
     {
         $client_obj = parent::findOne($id);
@@ -28,7 +36,7 @@ class Client extends ActiveRecord
         $view['id'] = $client_obj->id;
         $view['first_name'] = $client_obj->first_name;
         $view['last_name'] = $client_obj->last_name;
-        $view['phone'] = '+7(' . substr($phone, 0, 3) . ')' . substr($phone, 3, 2) . '-' . substr($phone,5);
+        $view['phone'] = '+7(' . substr($phone, 0, 3) . ')' . substr($phone, 3, 3) . '-' . substr($phone,6);
         $view['db_phone'] = $phone;
         $view['db_sex'] = $client_obj->sex;
         $view['db_born_date'] = $client_obj->born_date;

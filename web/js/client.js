@@ -84,7 +84,7 @@ ClientInfo.prototype = {
             $.ajax({
                 type: "POST",
                 data: result,
-                url: "/index.php?r=site/create",
+                url: create_url,
                 success: function (data) {
                     var url = client_url + '&id=' + data
                     window.location.assign(url);
@@ -104,9 +104,9 @@ ClientInfo.prototype = {
         var date = new Date(data.born_date);
         if (date == 'Invalid Date')
             errors.push('Не валидная дата!');
-        // var reg = new RegExp('\d{10}');
-        // if (data.phone.length != 10 || ! reg.test(data.phone))
-        //     errors.push('Не валидный номер телефона!');
+        var reg = new RegExp('[0-9]{10}');
+        if (data.phone.length != 10 || ! reg.test(data.phone))
+            errors.push('Не валидный номер телефона!');
         return errors;
     }
 };
@@ -164,7 +164,7 @@ AddressDialog.prototype = {
         $.ajax({
             type: "POST",
             data: data,
-            url: "/index.php?r=site/address",
+            url: address_url,
             success: function (data) {
                 $this.show($.parseJSON(data));
             }
@@ -197,7 +197,7 @@ AddressDialog.prototype = {
         $.ajax({
             type: "POST",
             data: data,
-            url: "/index.php?r=site/save",
+            url: save_url,
             success: function (data) {
                 window.location.assign(url);
             }

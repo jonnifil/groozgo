@@ -14,6 +14,9 @@ use yii\db\ActiveRecord;
 class ClientAddress extends ActiveRecord
 {
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getUser()
     {
         return $this->hasOne(Client::className(), ['id' => 'client_id']);
