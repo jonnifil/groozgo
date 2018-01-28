@@ -31,6 +31,7 @@ class Client extends ActiveRecord
         $view['phone'] = '+7(' . substr($phone, 0, 3) . ')' . substr($phone, 3, 2) . '-' . substr($phone,5);
         $view['db_phone'] = $phone;
         $view['db_sex'] = $client_obj->sex;
+        $view['db_born_date'] = $client_obj->born_date;
         return $view;
     }
 }

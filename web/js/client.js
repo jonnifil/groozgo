@@ -4,6 +4,7 @@
 $(document).ready(function () {
     var client_info = new ClientInfo();
     var address_info = new ClientAddressInfo();
+    client_info.add();
 });
 
 ClientInfo = function () {
@@ -11,6 +12,7 @@ ClientInfo = function () {
     this.edit_button = $('button[name="edit"]', this.block);
     this.save_button = $('button[name="save"]', this.block);
     this.cancel_button = $('button[name="cancel"]', this.block);
+    this.error_view = $('#error_message');
     this.edit_button.on('click', $.proxy(this.edit, this));
     this.save_button.on('click', $.proxy(this.save, this));
     this.cancel_button.on('click', $.proxy(this.cancel, this));
@@ -18,6 +20,13 @@ ClientInfo = function () {
 
 ClientInfo.prototype = {
     constructor: ClientInfo,
+
+    add: function () {
+        if (client_edit == 0){
+            this.edit();
+        }
+
+    },
 
     edit: function () {
         this.edit_button.addClass('hide');
@@ -33,22 +42,72 @@ ClientInfo.prototype = {
         $('input[name="first_name"]', this.block).val(client_info.first_name);
         $('input[name="last_name"]', this.block).val(client_info.last_name);
         $('input[name="phone"]', this.block).val(client_info.db_phone);
-        $('input[name="born_date"]', this.block).val(client_info.born_date);
+        $('input[name="born_date"]', this.block).val(client_info.db_born_date);
         $('input[name="sex"]', this.block).removeAttr('checked');
         $('input[name="sex"][value="' + client_info.db_sex + '"]', this.block).attr('checked', true);
     },
 
     cancel: function () {
+        this.error_view.empty();
         this.edit_button.removeClass('hide');
         this.save_button.addClass('hide');
         this.cancel_button.addClass('hide');
         $('p', this.block).removeClass('hide');
         $('input', this.block).addClass('hide');
         $('.input-group', this.block).addClass('hide');
+        if (client_edit == 0){
+            window.location.assign(back_url);
+        }
     },
 
     save: function () {
-
+        this.error_view.empty();
+        var data = {}, errors, error;
+        data.id = client_info.id;
+        data.last_name = $('input[name="last_name"]', this.block).val().trim();
+        data.first_name = $('input[name="first_name"]', this.block).val().trim();
+        data.phone = $('input[name="phone"]', this.block).val().trim();
+        data.born_date = $('input[name="born_date"]', this.block).val();
+        data.sex = $('input[name="sex"]:checked', this.block).val();
+        errors = this.validate(data);
+        if (errors.length > 0){
+            for (var i in errors){
+                error = errors[i];
+                $('<p class="text-danger">'+error+'</p>').appendTo(this.error_view);
+            }
+            return false;
+        }else{
+            var param = $('meta[name=csrf-param]').attr("content");
+            var token = $('meta[name=csrf-token]').attr("content");
+            var result = {client_data : data};
+            result[param] = token;
+            $.ajax({
+                type: "POST",
+                data: result,
+                url: "/index.php?r=site/create",
+                success: function (data) {
+                    var url = client_url + '&id=' + data
+                    window.location.assign(url);
+                }
+            })
+        }
+    },
+    
+    validate: function (data) {
+        var errors = [];
+        if (data.first_name.length == 0)
+            errors.push('Поле Имя должно быть заполнено!');
+        if (data.last_name.length == 0)
+            errors.push('Поле Фамилия должно быть заполнено!');
+        if (data.sex === undefined)
+            errors.push('Укажите пол!');
+        var date = new Date(data.born_date);
+        if (date == 'Invalid Date')
+            errors.push('Не валидная дата!');
+        // var reg = new RegExp('\d{10}');
+        // if (data.phone.length != 10 || ! reg.test(data.phone))
+        //     errors.push('Не валидный номер телефона!');
+        return errors;
     }
 };
 
@@ -142,7 +201,7 @@ AddressDialog.prototype = {
             success: function (data) {
                 window.location.assign(url);
             }
-        })
+        });
     }
 };
 

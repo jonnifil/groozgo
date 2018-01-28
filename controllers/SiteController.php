@@ -85,6 +85,22 @@ class SiteController extends Controller
      */
     public function actionClient($id)
     {
+        if ($id == 0){
+            $client_data = [
+                'id' => 0,
+                'first_name' => '',
+                'last_name' => '',
+                'born_date' => '',
+                'sex' => '',
+                'phone' => '',
+                'db_phone' => '',
+                'db_sex' => ''
+            ];
+            return $this->render('client', [
+                'client' => $client_data,
+                'edit' => false
+            ]);
+        }
         $client_data = Client::findOneView($id);
         $address_list = ClientAddress::find()->where(['client_id' => $id]);
         $provider = new ActiveDataProvider([
@@ -95,7 +111,8 @@ class SiteController extends Controller
         ]);
         return $this->render('client', [
             'client' => $client_data,
-            'provider' => $provider
+            'provider' => $provider,
+            'edit' => $id > 0
         ]);
     }
 
@@ -128,6 +145,29 @@ class SiteController extends Controller
             return 'saved';
         }
         return 'error';
+    }
+
+    /**
+     * @return int|mixed
+     */
+    public function actionCreate()
+    {
+        $client_data = Yii::$app->request->post('client_data');
+        if ($client_data){
+            if ($client_data['id'] > 0){
+                $model = Client::findOne($client_data['id']);
+            }else{
+                $model = new Client();
+            }
+            $model->first_name = $client_data['first_name'];
+            $model->last_name = $client_data['last_name'];
+            $model->born_date = $client_data['born_date'];
+            $model->sex = $client_data['sex'];
+            $model->phone = $client_data['phone'];
+            $model->save();
+            return $model->id;
+        }
+        return 0;
     }
 
     /**

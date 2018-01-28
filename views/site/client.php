@@ -1,4 +1,10 @@
 
+<script type="text/javascript">
+    var client_info = <?= json_encode($client) ?>;
+    var client_edit = <?=(int)$edit ?>;
+    var back_url = "<?=Yii::$app->getUrlManager()->createUrl(['site/index']) ?>";
+    var client_url = "<?=Yii::$app->getUrlManager()->createUrl(['site/client']) ?>";
+</script>
 <div class="col-lg-12" id="client_card">
     <h2 class="text-center">Карточка клиента</h2>
     <div class="col-lg-6 form-horizontal" id="main_info">
@@ -12,6 +18,7 @@
                 <button class="btn btn-default pull-right hide" name="cancel" style="margin-right: 5px;"><i class="glyphicon glyphicon-undo"></i> Отменить</button>
             </div>
         </div>
+        <div id="error_message"></div>
         <div class="form-group">
             <label class="col-lg-4 control-label">
                 Фамилия
@@ -20,7 +27,7 @@
                 <p class="form-control-static">
                     <?=$client['last_name'] ?>
                 </p>
-                <input type="text" class="form-control hide" name="last_name">
+                <input type="text" class="form-control hide" name="last_name" required>
             </div>
         </div>
         <div class="form-group">
@@ -31,7 +38,7 @@
                 <p class="form-control-static">
                     <?=$client['first_name'] ?>
                 </p>
-                <input type="text" class="form-control hide" name="first_name">
+                <input type="text" class="form-control hide" name="first_name" required>
             </div>
         </div>
         <div class="form-group">
@@ -63,7 +70,7 @@
                 <p class="form-control-static">
                     <?=$client['born_date'] ?>
                 </p>
-                <input type="text" class="form-control hide" name="born_date">
+                <input type="date" class="form-control hide" name="born_date" onclick="setDate(this);" max="2018-01-01" min="1900-01-01">
             </div>
         </div>
         <div class="form-group">
@@ -74,10 +81,14 @@
                 <p class="form-control-static">
                     <?=$client['phone'] ?>
                 </p>
-                <input type="text" class="form-control hide" name="phone">
+                <div class="input-group hide">
+                    <span class="input-group-addon">+7</span>
+                    <input type="tel" class="form-control hide" name="phone" maxlength="10">
+                </div>
             </div>
         </div>
     </div>
+    <?php if ($edit): ?>
     <div class="col-lg-6" id="address_info">
         <h3 class="text-center">Адреса</h3>
         <div class="col-lg-12">
@@ -104,6 +115,7 @@
             ]
         ]); ?>
     </div>
+    <?php endif; ?>
 </div>
 <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU&amp;load=SuggestView&amp;onload=onLoad"></script>
 <div class="modal fade" id="address_dialog" data-backdrop="static">
@@ -139,6 +151,3 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    var client_info = <?= json_encode($client) ?>;
-</script>
